@@ -38,8 +38,7 @@ task_status_choices = (
 class Task(models.Model):
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=128)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    board = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     status = models.CharField(max_length=20, choices=task_status_choices, default="OPEN")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -56,7 +55,8 @@ board_status_choices = (
 class ProjectBoard(models.Model):
     name = models.CharField(max_length=64, unique=True)
     description = models.CharField(max_length=128)
-    tasks = models.ManyToManyField(User, blank=True, related_name="tasks_list")
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
+    tasks = models.ManyToManyField(Task, blank=True, related_name="tasks_list")
     status = models.CharField(max_length=20, choices=board_status_choices, default="OPEN")
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
