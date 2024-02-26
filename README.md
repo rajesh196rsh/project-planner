@@ -66,3 +66,6 @@ This Django project provides APIs for managing users, teams, tasks, and project 
 
 6. Run Server
     python manage.py runserver
+
+7. Visualize all models on
+    http://127.0.0.1:8000/admin/
