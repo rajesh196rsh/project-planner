@@ -14,7 +14,9 @@ team_base = TeamBase()
 board_base = ProjectBoardBase()
 
 class CreateUserApi(APIView):
-
+    """
+        This API will create new user, get details of given user, update details of user
+    """
     def get(self, request):
         try:
             res = user_base.describe_user(json.dumps(request.data))
@@ -53,7 +55,9 @@ class CreateUserApi(APIView):
 
 
 class ListUsersApi(APIView):
-
+    """
+        This API will list all the active users
+    """
     def get(self, request):
         try:
             res = user_base.list_users()
@@ -68,7 +72,9 @@ class ListUsersApi(APIView):
 
 
 class GetUserTeams(APIView):
-
+    """
+        This API will return all the teams details for given user
+    """
     def get(self, request):
         try:
             res = user_base.get_user_teams(json.dumps(request.data))
@@ -83,7 +89,9 @@ class GetUserTeams(APIView):
 
 
 class CreateTeamApi(APIView):
-
+    """
+        This API will create new team, get details of given team, update details of team
+    """
     def get(self, request):
         try:
             res = team_base.describe_team(json.dumps(request.data))
@@ -122,7 +130,9 @@ class CreateTeamApi(APIView):
 
 
 class ListTeamApi(APIView):
-
+    """
+        This API will list all the active teams
+    """
     def get(self, request):
         try:
             res = team_base.list_teams()
@@ -137,7 +147,9 @@ class ListTeamApi(APIView):
 
 
 class AddUsersToTeam(APIView):
-
+    """
+        This API will add users to given team
+    """
     def post(self, request):
         try:
             res = team_base.add_users_to_team(json.dumps(request.data))
@@ -167,7 +179,9 @@ class RemovUsersFromTeam(APIView):
 
 
 class ListTeamUsers(APIView):
-
+    """
+        This API will remove users from given team
+    """
     def get(self, request):
         try:
             res = team_base.list_team_users(json.dumps(request.data))
@@ -182,7 +196,9 @@ class ListTeamUsers(APIView):
 
 
 class CreateBoardApi(APIView):
-
+    """
+        This API will create new board, delete board
+    """
     def post(self, request):
         try:
             res = board_base.create_board(json.dumps(request.data))
@@ -209,7 +225,9 @@ class CreateBoardApi(APIView):
 
 
 class ListBoardsApi(APIView):
-
+    """
+        This API will list all active boards
+    """
     def get(self, request):
         try:
             res = board_base.list_boards(json.dumps(request.data))
@@ -224,7 +242,9 @@ class ListBoardsApi(APIView):
 
 
 class CreateTaskApi(APIView):
-
+    """
+        This API will create new task, update details of task
+    """
     def post(self, request):
         try:
             res = board_base.create_board(json.dumps(request.data))
@@ -251,7 +271,9 @@ class CreateTaskApi(APIView):
 
 
 class ExportBoardApi(APIView):
-
+    """
+        This API will export all data related to given board into csv file
+    """
     def post(self, request):
         try:
             res = board_base.export_board(json.dumps(request.data))
