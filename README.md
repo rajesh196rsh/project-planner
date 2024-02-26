@@ -47,25 +47,24 @@ This Django project provides APIs for managing users, teams, tasks, and project 
 - `updated_at`: Timestamp of last project board update
 
 
-1. Clone the repository:
+### Clone the repository:
+   - git clone https://github.com/rajesh196rsh/project-planner.git
+   - cd project-planner
 
-   git clone https://github.com/rajesh196rsh/project-planner.git
-   cd project-planner
+### Create virtual env
+    - virtualenv venv
 
-2. Create virtual env
-    virtualenv venv
+### Activate env
+    - source venv/bin/activate
 
-3. Activate env
-    source venv/bin/activate
+### Install Requirements
+    - pip install -r requirements.txt
 
-4. Install Requirements
-    pip install -r requirements.txt
+### Apply migrations
+    - python manage.py migrate
 
-5. Apply migrations
-    python manage.py migrate
+### Run Server
+    - python manage.py runserver
 
-6. Run Server
-    python manage.py runserver
-
-7. Visualize all models on
-    http://127.0.0.1:8000/admin/
+### Visualize all models on
+    - http://127.0.0.1:8000/admin/
