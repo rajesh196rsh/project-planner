@@ -48,23 +48,23 @@ This Django project provides APIs for managing users, teams, tasks, and project 
 
 
 ### Clone the repository:
-   - git clone https://github.com/rajesh196rsh/project-planner.git
-   - cd project-planner
+   git clone https://github.com/rajesh196rsh/project-planner.git
+   cd project-planner
 
 ### Create virtual env
-    - virtualenv venv
+    virtualenv venv
 
 ### Activate env
-    - source venv/bin/activate
+    source venv/bin/activate
 
 ### Install Requirements
-    - pip install -r requirements.txt
+    pip install -r requirements.txt
 
 ### Apply migrations
-    - python manage.py migrate
+    python manage.py migrate
 
 ### Run Server
-    - python manage.py runserver
+    python manage.py runserver
 
 ### Visualize all models on
-    - http://127.0.0.1:8000/admin/
+    http://127.0.0.1:8000/admin/
