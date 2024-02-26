@@ -32,7 +32,7 @@ class TeamBase:
         if len(data["description"]) > 128:
             raise ValueError("Description cannot exceed 128 characters")
 
-        team_obj = Team.objects.create(name=data["name"], description=data["description"])
+        team_obj = Team.objects.create(name=data["name"].lower(), description=data["description"])
 
         users = [data["admin"]] if data.get("admin") else []
         add_users_payload = {
@@ -60,28 +60,31 @@ class TeamBase:
           }
         ]
         """
-        teams_objs = Team.objects.all(active=True)
+        teams_objs = Team.objects.filter(active=True)
         team_ids = []
-        for a_team in team_ids:
+        for a_team in teams_objs:
             team_ids.append(a_team.id)
         teams_users_map_objs = TeamUsersMapping.objects.filter(team_id__in=team_ids, active=True).values("team_id", "user_id")
 
         teams_users_map = {}
         for a_team_user in teams_users_map_objs:
-            if teams_users_map.get(a_team_user[0]):
-                teams_users_map[a_team_user[0]].append(a_team_user[1])
+            if teams_users_map.get(a_team_user["team_id"]):
+                teams_users_map[a_team_user["team_id"]].append(a_team_user["user_id"])
             else:
-                teams_users_map[a_team_user[0]] = [a_team_user[1]]
+                teams_users_map[a_team_user["team_id"]] = [a_team_user["user_id"]]
 
         res = []
         for a_team in teams_objs:
-            user = {
-              "name" : a_team.name,
-              "description" : a_team.description,
-              "creation_time" : a_team.created_at,
-              "admin": teams_users_map[a_team.id]
-            }
-            res.append(user)
+            try:
+                user = {
+                "name": a_team.name.capitalize(),
+                "description": a_team.description,
+                "creation_time": str(a_team.created_at),
+                "admin": teams_users_map[a_team.id]
+                }
+                res.append(user)
+            except Exception as e:
+                print(e)
 
         res = json.dumps(res)
         return res
@@ -111,10 +114,11 @@ class TeamBase:
         if team_obj:
             team_obj = team_obj[0]
             user_ids = TeamUsersMapping.objects.filter(team_id=team_id, active=True).values("user_id")
+            user_ids = [a_user["user_id"] for a_user in user_ids]
             res = {
-                "name": team_obj.name,
+                "name": team_obj.name.capitalize(),
                 "desccription": team_obj.description,
-                "creation_time": team_obj.created_at,
+                "creation_time": str(team_obj.created_at),
                 "admin": user_ids
             }
             res = json.dumps(res)
@@ -154,7 +158,7 @@ class TeamBase:
                 if len(new_name) > 64:
                     raise ValueError("Team name cannot exceed 64 characters")
                 else:
-                    team_obj.name = new_name
+                    team_obj.name = new_name.lower()
             new_description = team.get("description", None)
             if new_description:
                 if len(new_description) > 128:
@@ -193,6 +197,7 @@ class TeamBase:
 
         team_id = data["id"]
         existing_users = TeamUsersMapping.objects.filter(team_id=team_id, active=True).values("user_id")
+        existing_users = [a_user["user_id"] for a_user in existing_users]
         users = data["users"]
         users = list(set(users) - set(existing_users))
         existing_number_of_users = len(existing_users)
@@ -201,7 +206,7 @@ class TeamBase:
         users = users[:vacant]
 
         for a_user in users:
-            team_map = TeamUsersMapping.objects.get_or_create(team_id=team_id, user_id=a_user.id)
+            team_map, _ = TeamUsersMapping.objects.get_or_create(team_id=team_id, user_id=a_user)
             team_map.active = True
             team_map.save()
 
@@ -264,7 +269,7 @@ class TeamBase:
             res.append(
                 {
                     "id": a_user.id,
-                    "name": a_user.name,
+                    "name": a_user.name.capitalize(),
                     "display_name": a_user.display_name
                 }
             )

@@ -36,7 +36,7 @@ task_status_choices = (
 )
 
 class Task(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
     description = models.CharField(max_length=128)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     status = models.CharField(max_length=20, choices=task_status_choices, default="OPEN")

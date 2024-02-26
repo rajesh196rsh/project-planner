@@ -33,7 +33,7 @@ class ProjectBoardBase:
             raise ValueError("Description cannot exceed 128 characters")
 
         team = Team.objects.get(id=data["team_id"])
-        board_obj = ProjectBoard.objects.create(name=data["name"], description=data["description"], team=team)
+        board_obj = ProjectBoard.objects.create(name=data["name"].lower(), description=data["description"], team=team)
 
         res = {
             "id": board_obj.id
@@ -61,7 +61,7 @@ class ProjectBoardBase:
         if board_obj:
             board_obj = board_obj[0]
 
-            tasks = board_obj.tasks
+            tasks = board_obj.tasks.all()
             for a_task in tasks:
                 _ = self.update_task_status(json.dumps({
                     "id": a_task.id,
@@ -70,6 +70,7 @@ class ProjectBoardBase:
 
             board_obj.status = "CLOSED"
             board_obj.save()
+            res = "Closed"
         else:
             res = "Board does not exists"
 
@@ -103,7 +104,7 @@ class ProjectBoardBase:
         if len(data["description"]) > 128:
             raise ValueError("Description cannot exceed 128 characters")
 
-        task_obj = Task.objects.create(name=data["title"], description=data["description"])
+        task_obj = Task.objects.create(name=data["title"].lower(), description=data["description"])
         user = User.objects.get(id=data["user_id"])
         task_obj.user = user
         task_obj.save()
@@ -125,7 +126,7 @@ class ProjectBoardBase:
         """
         data = json.loads(request)
 
-        task_obj = Task.objects.get(id=data["id"])
+        task_obj = Task.objects.filter(id=data["id"])
         if task_obj:
             task_obj = task_obj[0]
             task_obj.status = data["status"].upper()
@@ -154,13 +155,13 @@ class ProjectBoardBase:
         """
         data = json.loads(request)
 
-        boards_objs = ProjectBoard.objects.filter(team__id=data["team_id"], active=True)
+        boards_objs = ProjectBoard.objects.filter(team__id=data["id"], active=True)
         res = []
         for a_board in boards_objs:
             res.append(
                 {
                     "id": a_board.id,
-                    "name": a_board.name
+                    "name": a_board.name.capitalize()
                 }
             )
         res = json.dumps(res)
@@ -187,34 +188,37 @@ class ProjectBoardBase:
         if board_obj:
             board_obj = board_obj[0]
             team_id = board_obj.team.id
-            team_name = board_obj.team.name
-            out_file_name = str(board_id) + "__" + board_obj.name + ".csv"
+            team_name = board_obj.team.name.capitalize()
+            out_file_name = str(board_id) + "__" + board_obj.name + ".txt"
 
             board_data = []
-            tasks = board_obj.tasks
+            tasks = board_obj.tasks.all()
             for a_task in tasks:
                 a_board_data = []
 
                 a_board_data.append(team_id)
                 a_board_data.append(team_name)
                 a_board_data.append(a_task.id)
-                a_board_data.append(a_task.name)
+                a_board_data.append(a_task.name.capitalize())
                 a_board_data.append(a_task.description)
                 a_board_data.append(a_task.user.id)
-                a_board_data.append(a_task.user.name)
+                a_board_data.append(a_task.user.name.capitalize())
                 a_board_data.append(a_task.user.display_name)
                 a_board_data.append(a_task.status)
-                a_board_data.append(a_task.created_at)
-                a_board_data.append(a_task.updated_at)
+                a_board_data.append(str(a_task.created_at))
+                a_board_data.append(str(a_task.updated_at))
 
-                board_data.append(board_data)
+                board_data.append(a_board_data)
 
             # creating df
             columns = ["team_id", "team_name", "task_id", "task_name", "task_description", "user_id", "user_name", "user_display_name", "status", "created_at", "updated_at"]
             df = pd.DataFrame(board_data, columns=columns)
 
-            # saving the dataframe
-            df.to_csv(out_file_name)
+            # export DataFrame to text file
+            with open(out_file_name, 'a') as f:
+                df_string = df.to_string(header=False, index=False)
+                f.write(df_string)
+
             res = out_file_name
         else:
             res = "Board does not exist"

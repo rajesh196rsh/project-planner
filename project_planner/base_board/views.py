@@ -43,7 +43,7 @@ class CreateUserApi(APIView):
 
     def patch(self, request):
         try:
-            res = user_base.update_user(request)
+            res = user_base.update_user(json.dumps(request.data))
             return Response(res, status=status.HTTP_200_OK)
         except KeyError:
             res = icorrect_payload_error
@@ -247,7 +247,7 @@ class CreateTaskApi(APIView):
     """
     def post(self, request):
         try:
-            res = board_base.create_board(json.dumps(request.data))
+            res = board_base.add_task(json.dumps(request.data))
             return Response(res, status=status.HTTP_200_OK)
         except KeyError:
             res = icorrect_payload_error

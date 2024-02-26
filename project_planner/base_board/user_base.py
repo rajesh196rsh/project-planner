@@ -27,7 +27,7 @@ class UserBase:
         if len(data["display_name"]) > 64:
             raise ValueError("Display name cannot exceed 64 characters")
 
-        user_obj = User.objects.create(name=data["name"], display_name=data["display_name"])
+        user_obj = User.objects.create(name=data["name"].lower(), display_name=data["display_name"])
         res = {
             "id": user_obj.id
         }
@@ -46,14 +46,14 @@ class UserBase:
           }
         ]
         """
-        users_objs = User.objects.all(active=True)
+        users_objs = User.objects.filter(active=True)
 
         res = []
         for a_user in users_objs:
             user = {
-              "name" : a_user.name,
+              "name" : a_user.name.capitalize(),
               "display_name" : a_user.display_name,
-              "creation_time" : a_user.created_at
+              "creation_time" : str(a_user.created_at)
             }
             res.append(user)
 
@@ -82,9 +82,9 @@ class UserBase:
         user_obj = User.objects.filter(id=data["user_id"], active=True)
         if user_obj:
             res = {
-                "name": user_obj[0].name,
+                "name": user_obj[0].name.capitalize(),
                 "display_name": user_obj[0].display_name,
-                "creation_time": user_obj[0].created_at
+                "creation_time": str(user_obj[0].created_at)
             }
             res = json.dumps(res)
         else:
@@ -112,7 +112,7 @@ class UserBase:
         """
         data = json.loads(request)
 
-        display_name = data.get("display_name")
+        display_name = data.get("user", {}).get("display_name")
         if display_name:
             if len(display_name) > 64:
               raise ValueError("Display name cannot exceed 64 characters")
@@ -145,7 +145,7 @@ class UserBase:
         team_ids = []
         for a_user_team in user_teams:
             team_ids.append(a_user_team.team_id)
-            user_teams_creation_map[a_user_team.team_id] = a_user_team.created_at
+            user_teams_creation_map[a_user_team.team_id] = str(a_user_team.created_at)
 
         teams = Team.objects.filter(id__in=team_ids)
 
@@ -153,7 +153,7 @@ class UserBase:
         for a_team in teams:
             res.append(
                 {
-                    "name": a_team.name,
+                    "name": a_team.name.capitalize(),
                     "description": a_team.description,
                     "creation_time": user_teams_creation_map[a_team.id]
                 }
